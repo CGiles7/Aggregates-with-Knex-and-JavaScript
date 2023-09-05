@@ -1,11 +1,35 @@
 const knex = require("../db/connection");
 
 function averageRating() {
-  // your solution here
+  try {
+    return knex('restaurants')
+      .avg({ avg: 'rating' })
+      .first()
+      .then((result) => {
+        const averageRating = parseFloat(result.avg); // Convert to a number
+
+        if (!isNaN(averageRating)) {
+          return { data: { average_rating: averageRating } }; // Return as a number
+        } else {
+          throw new Error('Average rating is not a valid number');
+        }
+      });
+  } catch (error) {
+    throw new Error('Error calculating average rating');
+  }
 }
 
 function count() {
-  // your solution here
+  try {
+    return knex('restaurants')
+      .count('restaurant_id as count')
+      .first()
+      .then((result) => {
+        return parseInt(result.count, 10);
+      });
+  } catch (error) {
+    throw new Error('Error counting restaurants');
+  }
 }
 
 function create(newRestaurant) {
@@ -27,7 +51,22 @@ function read(restaurant_id) {
 }
 
 function readHighestRating() {
-  // your solution here
+  try {
+    return knex('restaurants')
+      .max({ max_rating: 'rating' })
+      .first()
+      .then((result) => {
+        const maxRating = parseFloat(result.max_rating); // Convert to a number
+
+        if (!isNaN(maxRating)) {
+          return { data: { max_rating: maxRating.toFixed(2) } };
+        } else {
+          return { data: { max_rating: null } };
+        }
+      });
+  } catch (error) {
+    throw new Error('Error reading highest rating');
+  }
 }
 
 function update(updatedRestaurant) {
